@@ -5,6 +5,10 @@ import { Component } from "react";
 import ImageGallery from "./Components/ImageGallery";
 import imageApiService from "./servises/ImagesAPI/ImagesApi";
 import Button from "./Components/Button/Button";
+import Spinner from "./Components/Loader/Loader";
+import Modal from "./Components/Modal";
+import Container from "./Components/Container/Container";
+
 class App extends Component {
   state = {
     images: [],
@@ -12,8 +16,19 @@ class App extends Component {
     page: 1,
     isLoading: false,
     error: false,
+    showModal: false,
+    largeImageURL: null,
+    tags: null,
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    const { imageName, page } = this.state;
+    if (prevState.imageName !== imageName) {
+      this.setState({ isLoading: true });
+      this.fetchImages(imageName, page);
+      this.setState({ isLoading: false });
+    }
+  }
   searchImage = (imageName) => {
     this.setState({
       imageName,
@@ -21,13 +36,6 @@ class App extends Component {
       images: [],
     });
   };
-
-  componentDidUpdate(prevProps, prevState) {
-    const { imageName, page } = this.state;
-    if (prevState.imageName !== imageName) {
-      this.fetchImages(imageName, page);
-    }
-  }
 
   fetchImages = () => {
     const { imageName, page } = this.state;
@@ -40,23 +48,51 @@ class App extends Component {
         }))
       )
       .catch((error) => this.setState({ error: true }))
-      .finally(() => this.setState({ isLoading: false }));
+      .finally(() => {
+        this.setState({ loading: false });
+
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth",
+        });
+      });
   };
 
   buttonClickOnMore = () => {
     const { page } = this.state;
+    this.fetchImages();
     this.setState({
       page: page + 1,
     });
   };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+  bigImage = (largeImageURL, tags) => {
+    this.setState({
+      largeImageURL: largeImageURL,
+      tags: tags,
+    });
+    this.toggleModal();
+  };
   render() {
+    const { images, isLoading, showModal, largeImageURL, tags } = this.state;
     return (
-      <div>
+      <Container>
         <Searchbar onSubmit={this.searchImage} state={this.state} />
-        <ImageGallery images={this.state.images} />
-        <Button buttonClick={this.buttonClickOnMore} />
+        {isLoading && <Spinner />}
+        <ImageGallery images={images} onClick={this.bigImage} />
+        {showModal && (
+          <Modal onClose={this.bigImage}>
+            <img src={largeImageURL} alt={tags} />
+          </Modal>
+        )}
+        {images.length > 0 && <Button buttonClick={this.buttonClickOnMore} />}
         <ToastContainer autoClose={3000} />
-      </div>
+      </Container>
     );
   }
 }
