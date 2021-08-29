@@ -84,10 +84,13 @@ class App extends Component {
     }));
   };
 
-  bigImage = (largeImageURL, tags) => {
+  bigImage = (e) => {
+    if (e.target.nodeName !== "IMG") {
+      return;
+    }
     this.setState({
-      largeImageURL: largeImageURL,
-      tags: tags,
+      largeImageURL: e.target.dataset.url,
+      tags: e.target.alt,
     });
     this.toggleModal();
   };
