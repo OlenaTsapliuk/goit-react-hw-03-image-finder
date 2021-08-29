@@ -8,7 +8,8 @@ const imageApiService = (imageName, page = 1) => {
     .get(
       `${BASIC_URL}?key=${KEY}&q=${imageName}&image_type=photo&per_page=${PERPAGE}&page=${page}`
     )
-    .then((response) => response.data.hits);
+    .then((response) => response.data.hits)
+    .catch((error) => console.log(error));
 };
 
 export default imageApiService;
