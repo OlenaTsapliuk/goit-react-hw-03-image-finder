@@ -113,7 +113,7 @@ class App extends Component {
           <Button buttonClick={this.buttonClickOnMore} />
         )}
         {showModal && (
-          <Modal onClose={this.bigImage}>
+          <Modal onClose={this.toggleModal}>
             <img src={largeImageURL} alt={tags} />
           </Modal>
         )}
