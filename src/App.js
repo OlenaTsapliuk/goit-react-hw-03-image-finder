@@ -3,7 +3,7 @@ import "./App.css";
 import Searchbar from "./Components/Searchbar";
 import { Component } from "react";
 import ImageGallery from "./Components/ImageGallery";
-import imageApiService from "./servises/ImagesAPI/ImagesApi";
+import imageApiService from "./services/ImagesAPI/ImagesApi";
 import Button from "./Components/Button/Button";
 import Spinner from "./Components/Loader/Loader";
 import Modal from "./Components/Modal";
@@ -25,9 +25,7 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { imageName, page } = this.state;
     if (prevState.imageName !== imageName) {
-      this.setState({ isLoading: true });
       this.fetchImages(imageName, page);
-      this.setState({ isLoading: false });
     }
   }
   searchImage = (imageName) => {
